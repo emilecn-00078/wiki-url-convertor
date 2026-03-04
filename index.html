@@ -18,22 +18,6 @@
   h1{font-size:clamp(20px,4vw,34px);font-weight:300;letter-spacing:.04em;line-height:1.3;}
   h1 em{font-style:normal;color:var(--accent);}
   .subtitle{margin-top:8px;font-size:13px;color:var(--muted);}
-
-  /* API Key section */
-  .key-section{max-width:720px;margin:0 auto 28px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:18px 20px;}
-  .key-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
-  .key-title{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--accent);flex:1;}
-  .key-status{font-family:'DM Mono',monospace;font-size:10px;padding:2px 10px;border-radius:99px;border:1px solid var(--border);color:var(--muted);}
-  .key-status.ok{border-color:var(--success);color:var(--success);}
-  .key-row{display:flex;gap:8px;}
-  .key-input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:'DM Mono',monospace;font-size:12px;padding:8px 12px;outline:none;transition:border-color .2s;}
-  .key-input:focus{border-color:var(--accent);}
-  .key-input::placeholder{color:var(--muted);}
-  .key-btn{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;padding:8px 16px;border-radius:3px;cursor:pointer;border:none;background:var(--accent);color:#0e0e10;font-weight:500;transition:all .2s;white-space:nowrap;}
-  .key-btn:hover{background:#d9bc82;}
-  .key-note{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:8px;line-height:1.6;}
-
-  /* Input section */
   .input-section{max-width:720px;margin:0 auto 36px;}
   .input-label{font-size:12px;font-family:'DM Mono',monospace;letter-spacing:2px;color:var(--accent);margin-bottom:10px;display:block;}
   textarea{width:100%;height:180px;background:var(--surface);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:'DM Mono',monospace;font-size:13px;line-height:1.7;padding:16px 18px;resize:vertical;outline:none;transition:border-color .2s;}
@@ -48,8 +32,6 @@
   .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);}
   .btn-ghost:hover{border-color:var(--muted);color:var(--text);}
   .count-badge{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-left:auto;}
-
-  /* Results */
   .results-section{max-width:1100px;margin:0 auto;animation:fadeUp .4s ease both;}
   @keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
   .results-header{display:flex;align-items:center;gap:16px;margin-bottom:16px;flex-wrap:wrap;}
@@ -89,32 +71,15 @@
 <header>
   <div class="logo-badge">WIKI · URL · GENERATOR</div>
   <h1>維基百科<em>網址</em>產生器</h1>
-  <p class="subtitle">自動生成中英文維基百科頁面連結，支援批量輸入</p>
+  <p class="subtitle">自動生成中英文維基百科頁面連結，支援批量輸入，無需 API Key</p>
 </header>
 
-<!-- API Key -->
-<div class="key-section">
-  <div class="key-header">
-    <span class="key-title">ANTHROPIC API KEY</span>
-    <span class="key-status" id="keyStatus">未設定</span>
-  </div>
-  <div class="key-row">
-    <input class="key-input" type="password" id="apiKeyInput" placeholder="sk-ant-api03-…" autocomplete="off" />
-    <button class="key-btn" onclick="saveKey()">確 認</button>
-  </div>
-  <div class="key-note">
-    🔒 Key 僅存於頁面記憶體，關閉頁面即消失，不會上傳至任何伺服器。<br>
-    取得 Key：<a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--accent2);text-decoration:underline;">console.anthropic.com</a>
-  </div>
-</div>
-
-<!-- Names input -->
 <div class="input-section">
   <label class="input-label" for="namesInput">輸入名稱</label>
   <textarea id="namesInput"
     placeholder="每行一個名稱，例如：&#10;谷歌&#10;愛因斯坦&#10;居里夫人&#10;Newton&#10;Shakespeare&#10;諸葛亮"
     spellcheck="false"></textarea>
-  <div class="hint">每行一個 · 支援中英文混合 · 中文名稱自動查找對應英文維基頁面</div>
+  <div class="hint">每行一個 · 支援中英文混合 · 點擊🔗可直接跳轉到對應英文維基頁面</div>
   <div class="btn-row">
     <button class="btn btn-primary" id="generateBtn" onclick="generate()">產 生 網 址</button>
     <button class="btn btn-ghost" onclick="clearAll()">清 除</button>
@@ -125,25 +90,6 @@
 <div id="output"></div>
 
 <script>
-let apiKey = '';
-
-function saveKey() {
-  const val = document.getElementById('apiKeyInput').value.trim();
-  if (!val.startsWith('sk-')) {
-    document.getElementById('keyStatus').textContent = '格式有誤';
-    document.getElementById('keyStatus').className = 'key-status';
-    return;
-  }
-  apiKey = val;
-  document.getElementById('keyStatus').textContent = '✓ 已設定';
-  document.getElementById('keyStatus').className = 'key-status ok';
-  // Mask display
-  document.getElementById('apiKeyInput').value = val.slice(0,12) + '••••••••••••••••••••';
-}
-
-// Allow pressing Enter in key input
-document.getElementById('apiKeyInput').addEventListener('keydown', e => { if (e.key === 'Enter') saveKey(); });
-
 function isAscii(str) { return /^[\x00-\x7F]+$/.test(str.trim()); }
 
 function encodeZhTitle(name) {
@@ -153,193 +99,12 @@ function encodeZhTitle(name) {
   }).join('');
 }
 function buildZhUrl(name) { return `https://zh.wikipedia.org/wiki/${encodeZhTitle(name)}`; }
-function buildEnUrlFromTitle(t) { return `https://en.wikipedia.org/wiki/${t.trim().split(' ').join('_')}`; }
-
-async function resolveEnTitles(names) {
-  const prompt = `You are a Wikipedia expert. For each name below, return the EXACT English Wikipedia article title.
-
-Rules:
-- Return ONLY a raw JSON object (no markdown, no backticks)
-- Map each input name to its exact English Wikipedia article title
-- For Chinese names, find the well-known English article (e.g. 谷歌→Google, 愛因斯坦→Albert Einstein, 居里夫人→Marie Curie)
-- For English names, return the proper Wikipedia capitalisation (e.g. newton→Isaac Newton)
-- If truly unknown, map to null
-
-Names:
-${names.map((n,i)=>`${i+1}. ${n}`).join('\n')}
-
-Respond with ONLY a JSON object like: {"谷歌":"Google","愛因斯坦":"Albert Einstein"}`;
-
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1000,
-      messages: [{ role: 'user', content: prompt }]
-    })
-  });
-  const data = await res.json();
-  if (data.error) { console.error('Claude API error:', data.error); return {}; }
-  const text = (data.content || []).map(b => b.text || '').join('');
-  const clean = text.replace(/```json|```/gi, '').trim();
-  try { return JSON.parse(clean); } catch(e) { return {}; }
+function buildEnUrl(name) {
+  // Use Wikipedia's cross-language redirect - works for any language input
+  return `https://zh.wikipedia.org/wiki/Special:GoToLinkedPage/en/${encodeZhTitle(name)}`;
 }
 
-function copyText(text, btn) {
-  navigator.clipboard.writeText(text).then(() => {
-    btn.textContent = '✓'; btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 1500);
-  }).catch(() => {
-    const ta = document.createElement('textarea');
-    ta.value = text; document.body.appendChild(ta); ta.select();
-    document.execCommand('copy'); document.body.removeChild(ta);
-    btn.textContent = '✓'; btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 1500);
-  });
-}
-
-function copyRowUrls(i) {
-  const row = document.getElementById(`row-${i}`);
-  if (!row) return;
-  const text = [row.dataset.zh, row.dataset.en].filter(Boolean).join('\n');
-  copyText(text, document.getElementById(`copy-btn-${i}`));
-}
-
-function copyAll() {
-  const rows = document.querySelectorAll('tbody tr[data-zh]');
-  const lines = [];
-  rows.forEach((tr, i) => {
-    lines.push(`${i+1}. ${tr.dataset.name}`);
-    lines.push(`   ZH: ${tr.dataset.zh}`);
-    if (tr.dataset.en) lines.push(`   EN: ${tr.dataset.en}`);
-    lines.push('');
-  });
-  const text = lines.join('\n').trim();
-  navigator.clipboard.writeText(text).catch(() => {
-    const ta = document.createElement('textarea'); ta.value = text;
-    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
-  });
-  const btn = document.getElementById('copyAllBtn');
-  if (btn) { btn.textContent = '✓ 已複製'; setTimeout(() => { btn.textContent = '複製全部'; }, 2000); }
-}
-
-async function generate() {
-  if (!apiKey) {
-    alert('請先填入 Anthropic API Key！');
-    document.getElementById('apiKeyInput').focus();
-    return;
-  }
-  const raw = document.getElementById('namesInput').value;
-  const names = raw.split('\n').map(n => n.trim()).filter(n => n.length > 0);
-  const countBadge = document.getElementById('countBadge');
-  const genBtn = document.getElementById('generateBtn');
-
-  if (names.length === 0) {
-    document.getElementById('output').innerHTML = `<div class="placeholder"><div class="placeholder-icon">📋</div>請先在上方輸入名稱</div>`;
-    return;
-  }
-
-  countBadge.textContent = `共 ${names.length} 筆`;
-  genBtn.disabled = true;
-  genBtn.textContent = '查 詢 中…';
-
-  // Skeleton rows
-  const tableRows = names.map((name, i) => {
-    const zhUrl = buildZhUrl(name);
-    const ascii = isAscii(name);
-    const enUrl = ascii ? buildEnUrlFromTitle(name.trim().charAt(0).toUpperCase() + name.trim().slice(1)) : '';
-    return `<tr id="row-${i}" data-name="${escAttr(name)}" data-zh="${escAttr(zhUrl)}" data-en="${escAttr(enUrl)}">
-      <td class="td-num">${i+1}</td>
-      <td class="td-name">${escHtml(name)}</td>
-      <td><div class="url-cell"><span class="url-text zh">${escHtml(zhUrl)}</span><a href="${escAttr(zhUrl)}" target="_blank">🔗</a></div></td>
-      <td id="en-cell-${i}">${ascii
-        ? `<div class="url-cell"><span class="url-text">${escHtml(enUrl)}</span><a href="${escAttr(enUrl)}" target="_blank">🔗</a></div>`
-        : `<div class="url-cell"><span class="url-text loading">查詢中…</span></div>`}</td>
-      <td><button class="copy-btn" id="copy-btn-${i}" ${ascii?'':'disabled'} onclick="copyRowUrls(${i})">COPY</button></td>
-    </tr>`;
-  }).join('');
-
-  const nonAscii = names.filter(n => !isAscii(n));
-
-  document.getElementById('output').innerHTML = `
-    <div class="results-section">
-      ${nonAscii.length > 0 ? `
-      <div class="progress-wrap" id="progressWrap">
-        <div class="progress-label" id="progressLabel">正在透過 Claude AI 查詢英文頁面標題…</div>
-        <div class="progress-bg"><div class="progress-fill" id="progressFill" style="width:5%"></div></div>
-      </div>` : ''}
-      <div class="results-header">
-        <span class="results-title">搜尋結果 · ${names.length} 筆</span>
-        <button class="copy-all-btn" id="copyAllBtn" onclick="copyAll()">複製全部</button>
-      </div>
-      <div class="table-wrapper">
-        <table>
-          <thead><tr>
-            <th>#</th><th>名 稱</th>
-            <th>🇹🇼 中文維基百科 (ZH)</th>
-            <th>🇬🇧 英文維基百科 (EN)</th>
-            <th>複製</th>
-          </tr></thead>
-          <tbody>${tableRows}</tbody>
-        </table>
-      </div>
-    </div>`;
-
-  // Resolve non-ASCII in batches of 30
-  const BATCH = 30;
-  let done = 0;
-  for (let i = 0; i < nonAscii.length; i += BATCH) {
-    const batch = nonAscii.slice(i, i + BATCH);
-    const map = await resolveEnTitles(batch);
-    batch.forEach(name => {
-      const enTitle = map[name];
-      const idx = names.indexOf(name);
-      if (idx === -1) return;
-      const enUrl = enTitle ? buildEnUrlFromTitle(enTitle) : null;
-      const row = document.getElementById(`row-${idx}`);
-      if (row) row.dataset.en = enUrl || '';
-      const cell = document.getElementById(`en-cell-${idx}`);
-      if (cell) cell.innerHTML = enUrl
-        ? `<div class="url-cell"><span class="url-text">${escHtml(enUrl)}</span><a href="${escAttr(enUrl)}" target="_blank">🔗</a></div>`
-        : `<div class="url-cell"><span class="url-text not-found">— 找不到英文頁面</span></div>`;
-      const btn = document.getElementById(`copy-btn-${idx}`);
-      if (btn) btn.disabled = false;
-    });
-    done += batch.length;
-    const pct = Math.min(95, Math.round(done / nonAscii.length * 95));
-    const fill = document.getElementById('progressFill');
-    const label = document.getElementById('progressLabel');
-    if (fill) fill.style.width = pct + '%';
-    if (label) label.textContent = `正在查詢… ${done} / ${nonAscii.length}`;
-  }
-
-  const pw = document.getElementById('progressWrap');
-  if (pw) pw.style.display = 'none';
-  genBtn.disabled = false;
-  genBtn.textContent = '產 生 網 址';
-}
-
-function clearAll() {
-  document.getElementById('namesInput').value = '';
-  document.getElementById('output').innerHTML = '';
-  document.getElementById('countBadge').textContent = '';
-  const btn = document.getElementById('generateBtn');
-  btn.disabled = false; btn.textContent = '產 生 網 址';
-}
-
-function escHtml(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function escAttr(str) { return String(str).replace(/'/g,'&#39;').replace(/"/g,'&quot;'); }
-
-document.getElementById('namesInput').addEventListener('input', function() {
-  const n = this.value.split('\n').filter(x => x.trim()).length;
-  document.getElementById('countBadge').textContent = n > 0 ? `${n} 筆` : '';
-});
-</script>
-</body>
-</html>
+// Fetch English title via zh.wikipedia langlinks API (works from https:// hosted pages)
+async function fetchEnTitlesBatch(names) {
+  const titlesParam = names.map(n => n.trim()).join('|');
+  const url = `https://zh.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(titlesPara
