@@ -129,7 +129,7 @@ let apiKey = '';
 
 function saveKey() {
   const val = document.getElementById('apiKeyInput').value.trim();
-  if (!val.startsWith('sk-ant-')) {
+  if (!val.startsWith('sk-')) {
     document.getElementById('keyStatus').textContent = '格式有誤';
     document.getElementById('keyStatus').className = 'key-status';
     return;
@@ -179,7 +179,7 @@ Respond with ONLY a JSON object like: {"谷歌":"Google","愛因斯坦":"Albert 
       'anthropic-dangerous-direct-browser-access': 'true'
     },
     body: JSON.stringify({
-      model: 'claude-opus-4-5',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 1000,
       messages: [{ role: 'user', content: prompt }]
     })
